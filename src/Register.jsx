@@ -11,7 +11,6 @@ const Register = () => {
     const errRef = useRef();
 
     const [user, setUser] = useState({
-        // name: '',
         value: '',
         name: 'username',
         isValid: false,
@@ -33,64 +32,32 @@ const Register = () => {
         isFocused: false,
     });
 
+    // console.log('MARMUUUUU',user.isValid, pwd.isValid, matchPwd.isValid);
+    const [errMessage, setErrMessage] = useState(null);
+    const [requestStatus, setRequestStattus] = useState('idle');
+
     useEffect(() => {
         userRef.current.focus();
     }, []);
 
     useEffect(() => {
+        console.log('User validation');
         const isCurrentUserNameValid = USER_REGEX.test(user.value);
         setUser((prev) => ({...prev, isValid: isCurrentUserNameValid}));
     }, [user.value]);
 
     useEffect(() => {
+        console.log('Validation');
         const isCurrentPwdValid = PWD_REGEX.test(pwd.value);
         setPwd((prev) => ({...prev, isValid: isCurrentPwdValid}));
-        setMatchPwd((prev) => ({...prev, isValid: matchPwd === pwd}));
+        setMatchPwd((prev) => ({...prev, isValid: matchPwd.value === pwd.value}));
     }, [pwd.value, matchPwd.value]);
-    /*
-    const [user, setUser] = useState('');
-    const [isUserNameValid, setIsUserNameValid] = useState(false);
-    const [isUserFocus, setIsUserFocus] = useState(false);
-
-    const [pwd, setPwd] = useState('');
-    const [isPwdValid, setIsPwdValid] = useState(false);
-    const [isPwdFocus, setIsPwdFocus] = useState(false);
-
-    const [matchPwd, setMatchPwd] = useState('');
-    const [isMatchPwdValid, setIsMatchPwdValid] = useState(false);
-    const [isMatchPwdFocus, setIsMatchPwdFocus] = useState(false);
-
-    const [errMessage, setErrMessage] = useState(null);
-    const [requestStatus, setRequestStattus] = useState('idle');
 
     useEffect(() => {
-        const isCurrentUserNameValid = USER_REGEX.test(user);
-        setIsUserNameValid(isCurrentUserNameValid);
-    }, [user]);
-
-    useEffect(() => {
-        const isCurrentPwdValid = PWD_REGEX.test(pwd);
-        setIsPwdValid(isCurrentPwdValid);
-        setIsMatchPwdValid(matchPwd === pwd);
-    }, [pwd, matchPwd]);
-    */
-    
-    /*
-    useEffect(() => {
-        const isCurrentPwdValid = PWD_REGEX.test(pwd);
-        setIsPwdValid(isCurrentPwdValid);
-    }, [pwd]);
-
-    useEffect(() => {
-        const isCurrentMatchPwdValid = matchPwd === pwd;
-        setIsMatchPwdValid(isCurrentMatchPwdValid);
-    }, [pwd, matchPwd]);
-    */
-
-    useEffect(() => {
-        const currentErrorMessage = 
-      setErrMessage()
-    }, [user, pwd, matchPwd]);
+        const currentErrorMessage = generateErrorMessage();
+        console.log('CURRENTErrorMessage', currentErrorMessage);
+        setErrMessage(currentErrorMessage);
+    }, [user.isValid, pwd.isValid, matchPwd.isValid]);
 
     const fieldsToErrorMessages = {
         username: 'Username must start with a letter and contain from 4 up to 24 characters',
@@ -100,23 +67,56 @@ const Register = () => {
 
     const generateErrorMessage = () => {
         const fieldsToCheck = [user, pwd, matchPwd];
-        // const errMessage = fieldsToCheck
-          // .reduce((acc, el) => acc.concat(`${el.isValid ? '' : fieldsToErrorMessages[]}`), '');
+        const errMessage = fieldsToCheck
+          .reduce((acc, el) => {
+            const text = el.isValid ? '' : `${fieldsToErrorMessages[el.name]} `;
+            return acc.concat(text);
+        }, '');
+        return errMessage.trim();
     };
+
+    const handleInputChange = () => {};
 
     return  (
         <div>
             <form>
-                <label htmlFor="username">username</label>
-                <input
-                    type="text"
-                    id="username"
-                    name="username"
-                    ref={userRef}
-                    autoComplete="off"
-                    value={user.value}
-                    required
-                />
+                <div>
+                    <label htmlFor="username">username</label>
+                    <input
+                        type="text"
+                        id="username"
+                        name="username"
+                        ref={userRef}
+                        autoComplete="off"
+                        value={user.value}
+                        required
+                        onChange={(e) => setUser((prev) => ({...prev, value: e.target.value}))}
+                    />
+                </div>
+                <div>
+                    <label htmlFor="upwd">password</label>
+                    <input
+                        type="text"
+                        id="pwd"
+                        name="pwd"
+                        autoComplete="off"
+                        value={pwd.value}
+                        required
+                        onChange={(e) => setPwd((prev) => ({...prev, value: e.target.value}))}
+                    />
+                </div>
+                <div>
+                    <label htmlFor="match-pwd">confirm password</label>
+                    <input
+                        type="text"
+                        id="match-pwd"
+                        name="match-pwd"
+                        autoComplete="off"
+                        value={matchPwd.value}
+                        required
+                        onChange={(e) => setMatchPwd((prev) => ({...prev, value: e.target.value}))}
+                    />
+                </div>
             </form>
         </div>
     );
