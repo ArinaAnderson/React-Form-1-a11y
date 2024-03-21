@@ -11,30 +11,42 @@ const Register = () => {
     const errRef = useRef();
 
     const [user, setUser] = useState({
-        name: '',
+        // name: '',
+        value: '',
+        name: 'username',
         isValid: false,
         isFocused: false,
-        errMessage: 'Username must be start with a letter and contain from 4 up to 24 characters',
+        // errMessage: 'Username must be start with a letter and contain from 4 up to 24 characters',
     });
+
     const [pwd, setPwd] = useState({
-        pwd: '',
-        isValid: false, isFocused: false});
-    const [matchPwd, setMatchPwd] = useState({matchPwd: '', isValid: false, isFocused: false});
+        value: '',
+        name: 'pwd',
+        isValid: false,
+        isFocused: false,
+    });
+
+    const [matchPwd, setMatchPwd] = useState({
+        value: '',
+        name: 'match-pwd',
+        isValid: false,
+        isFocused: false,
+    });
 
     useEffect(() => {
         userRef.current.focus();
     }, []);
 
     useEffect(() => {
-        const isCurrentUserNameValid = USER_REGEX.test(user.name);
+        const isCurrentUserNameValid = USER_REGEX.test(user.value);
         setUser((prev) => ({...prev, isValid: isCurrentUserNameValid}));
-    }, [user]);
+    }, [user.value]);
 
     useEffect(() => {
-        const isCurrentPwdValid = PWD_REGEX.test(pwd);
+        const isCurrentPwdValid = PWD_REGEX.test(pwd.value);
         setPwd((prev) => ({...prev, isValid: isCurrentPwdValid}));
         setMatchPwd((prev) => ({...prev, isValid: matchPwd === pwd}));
-    }, [pwd, matchPwd]);
+    }, [pwd.value, matchPwd.value]);
     /*
     const [user, setUser] = useState('');
     const [isUserNameValid, setIsUserNameValid] = useState(false);
@@ -81,9 +93,9 @@ const Register = () => {
     }, [user, pwd, matchPwd]);
 
     const fieldsToErrorMessages = {
-        user: 'Username must be start with a letter and contain from 4 up to 24 characters',
+        username: 'Username must start with a letter and contain from 4 up to 24 characters',
         pwd: 'Password must contain from 8 to 24 characters including at least 1 lowercase letter, 1 uppercase letter, 1 digit and 1 special character',
-        matchPwd: 'Passwords must match',
+        'match-pwd': 'Passwords must match',
     };
 
     const generateErrorMessage = () => {
@@ -94,7 +106,18 @@ const Register = () => {
 
     return  (
         <div>
-
+            <form>
+                <label htmlFor="username">username</label>
+                <input
+                    type="text"
+                    id="username"
+                    name="username"
+                    ref={userRef}
+                    autoComplete="off"
+                    value={user.value}
+                    required
+                />
+            </form>
         </div>
     );
 };
