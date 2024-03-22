@@ -33,7 +33,7 @@ const Register = () => {
     });
 
     // console.log('MARMUUUUU',user.isValid, pwd.isValid, matchPwd.isValid);
-    const [errMessage, setErrMessage] = useState(null);
+    const [errMessage, setErrMessage] = useState('');
     const [requestStatus, setRequestStattus] = useState('idle');
 
     useEffect(() => {
@@ -66,7 +66,7 @@ const Register = () => {
     }, [user.value, pwd.value, matchPwd.value]);
 
     const fieldsToErrorMessages = {
-        username: 'Username must start with a letter and contain from 4 up to 24 characters',
+        username: 'Username must start with a letter and contain from 4 up to 24 characters.Letters, numbers, hyphens, underscores are allowed',
         pwd: 'Password must contain from 8 to 24 characters including at least 1 lowercase letter, 1 uppercase letter, 1 digit and 1 special character',
         'match-pwd': 'Passwords must match',
     };
@@ -83,11 +83,33 @@ const Register = () => {
 
     const handleInputChange = () => {};
 
+    const handleFormSubmit = (evt) => {
+        e.preventDefault();
+        // generateErrorMessage
+        // if generatedErrString.length > 0 => setErrMessage(generatedErrString); AND errRef.current.focus()
+        // return
+
+        // try catch(e)
+
+    };
+
     return  (
-        <div>
+        <section>
+            <p ref={errRef} className={errMessage.length > 0 ? "errMsg" : "offscreen"} aria-live="assertive">
+                {errMessage}
+            </p>
+            <h1>Register</h1>
             <form>
                 <div>
-                    <label htmlFor="username">username</label>
+                    <label htmlFor="username">
+                        Username
+                        <span className={user.isValid ? "valid" : "hide"}>
+                            <FontAwesomeIcon icon={faCheck} />
+                        </span>
+                        <span className={user.isValid || user.value.length === 0 ? "hide" : "invalid"}>
+                            <FontAwesomeIcon icon={faTimes} />
+                        </span>
+                    </label>
                     <input
                         type="text"
                         id="username"
@@ -97,8 +119,26 @@ const Register = () => {
                         value={user.value}
                         required
                         onChange={(e) => setUser((prev) => ({...prev, value: e.target.value}))}
+                        aria-invalid={user.isValid ? "false" : "true"}
+                        aria-describedby="uidnote"
+                        // onFocus={() => setUser((prev) => ({...prev, isFocused: true}))}
+                        onFocus={() => setUser((prev) => {
+                            console.log('FOCUS!!');
+                            return {...prev, isFocused: true};
+                        })}
+                        onBlur={() => setUser((prev) => {
+                            console.log('BLUR!!');
+                            return {...prev, isFocused: false};
+                        })}
                     />
                 </div>
+                <p
+                  id="uidnote"
+                  className={!user.isValid && user.isFocused && user.value.length > 0 ? "instructions" : "offscreen"}
+                >
+                    <FontAwesomeIcon icon={faInfoCircle} />
+                    {fieldsToErrorMessages.username}
+                </p>
                 <div>
                     <label htmlFor="upwd">password</label>
                     <input
@@ -124,7 +164,7 @@ const Register = () => {
                     />
                 </div>
             </form>
-        </div>
+            </section>
     );
 };
 
