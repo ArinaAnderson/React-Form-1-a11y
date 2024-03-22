@@ -6,6 +6,16 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 const USER_REGEX = /^[a-zA-Z][a-zA-Z0-9-_]{3,23}$/;
 const PWD_REGEX = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%]).{8,24}$/;
 
+const SpecialSymbol = ({specialSymbolType}) => {
+    const symbolsToAriaLabels = {
+        '@': 'at symbol',
+        '!': 'exclamation mark',
+        '#': 'hashtag',
+        '$': 'dollar sign',
+    };
+    return <span aria-label>{specialSymbolType}</span>
+};
+
 const Register = () => {
     const userRef = useRef();
     const errRef = useRef();
@@ -67,7 +77,11 @@ const Register = () => {
 
     const fieldsToErrorMessages = {
         username: 'Username must start with a letter and contain from 4 up to 24 characters.Letters, numbers, hyphens, underscores are allowed',
-        pwd: 'Password must contain from 8 to 24 characters including at least 1 lowercase letter, 1 uppercase letter, 1 digit and 1 special character',
+        pwd: `<FontAwesomeIcon icon={faInfoCircle} /> Password must contain from 8 to 24 characters including at least 1 lowercase letter,
+        1 uppercase letter, 1 digit and 1 special character.
+        Allowed special characters are: <span aria-label="exclamation mark">!</span>
+        <span aria-label="at symbol">@</span> <span aria-label="hashtag">#</span> <span aria-label="hashtag">#</span>
+        <span aria-label="dollar sign">$</span> <span aria-label="percent">%</span>,`,
         'match-pwd': 'Passwords must match',
     };
 
@@ -123,11 +137,9 @@ const Register = () => {
                         aria-describedby="uidnote"
                         // onFocus={() => setUser((prev) => ({...prev, isFocused: true}))}
                         onFocus={() => setUser((prev) => {
-                            console.log('FOCUS!!');
                             return {...prev, isFocused: true};
                         })}
                         onBlur={() => setUser((prev) => {
-                            console.log('BLUR!!');
                             return {...prev, isFocused: false};
                         })}
                     />
@@ -140,17 +152,40 @@ const Register = () => {
                     {fieldsToErrorMessages.username}
                 </p>
                 <div>
-                    <label htmlFor="upwd">password</label>
+                    <label htmlFor="pwd">
+                        Password:
+                        <span className={pwd.isValid ? "valid" : "hide"}>
+                            <FontAwesomeIcon icon={faCheck} />
+                        </span>
+                        <span className={pwd.isValid || pwd.value.length === 0 ? "hide" : "invalid"}>
+                            <FontAwesomeIcon icon={faTimes} />
+                        </span>
+
+                    </label>
                     <input
-                        type="text"
+                        type="password"
                         id="pwd"
                         name="pwd"
-                        autoComplete="off"
                         value={pwd.value}
                         required
                         onChange={(e) => setPwd((prev) => ({...prev, value: e.target.value}))}
+                        aria-invalid={pwd.isValid ? "false" : "true"}
+                        aria-describedby="pwdidnote"
+                        // onFocus={() => setUser((prev) => ({...prev, isFocused: true}))}
+                        onFocus={() => setPwd((prev) => {
+                            return {...prev, isFocused: true};
+                        })}
+                        onBlur={() => setPwd((prev) => {
+                            return {...prev, isFocused: false};
+                        })}
                     />
                 </div>
+                <p
+                  id="pwdidnote"
+                  className={!pwd.isValid && pwd.isFocused ? "instructions" : "offscreen"}
+                  dangerouslySetInnerHTML={{ __html: fieldsToErrorMessages.pwd}}
+                >
+                </p>
                 <div>
                     <label htmlFor="match-pwd">confirm password</label>
                     <input
