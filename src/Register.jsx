@@ -53,11 +53,17 @@ const Register = () => {
         setMatchPwd((prev) => ({...prev, isValid: matchPwd.value === pwd.value}));
     }, [pwd.value, matchPwd.value]);
 
+    /*
     useEffect(() => {
         const currentErrorMessage = generateErrorMessage();
         console.log('CURRENTErrorMessage', currentErrorMessage);
         setErrMessage(currentErrorMessage);
     }, [user.isValid, pwd.isValid, matchPwd.isValid]);
+    */
+
+    useEffect(() => {
+        setErrMessage('');
+    }, [user.value, pwd.value, matchPwd.value]);
 
     const fieldsToErrorMessages = {
         username: 'Username must start with a letter and contain from 4 up to 24 characters',
