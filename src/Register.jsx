@@ -12,8 +12,9 @@ const SpecialSymbol = ({specialSymbolType}) => {
         '!': 'exclamation mark',
         '#': 'hashtag',
         '$': 'dollar sign',
+        '%': 'percent',
     };
-    return <span aria-label>{specialSymbolType}</span>
+    return <span aria-label={symbolsToAriaLabels[specialSymbolType]}>{specialSymbolType}</span>;
 };
 
 const Register = () => {
@@ -80,11 +81,13 @@ const Register = () => {
         pwd: `<FontAwesomeIcon icon={faInfoCircle} /> Password must contain from 8 to 24 characters including at least 1 lowercase letter,
         1 uppercase letter, 1 digit and 1 special character.
         Allowed special characters are: <span aria-label="exclamation mark">!</span>
-        <span aria-label="at symbol">@</span> <span aria-label="hashtag">#</span> <span aria-label="hashtag">#</span>
-        <span aria-label="dollar sign">$</span> <span aria-label="percent">%</span>,`,
+        <span aria-label="at symbol">@</span> <span aria-label="hashtag">#</span>
+        <span aria-label="dollar sign">$</span> <span aria-label="percent">%</span>`,
         'match-pwd': 'Passwords must match',
     };
-
+  // <span aria-label="exclamation mark">!</span>
+  // <span aria-label="at symbol">@</span> <span aria-label="hashtag">#</span>
+  // <span aria-label="dollar sign">$</span> <span aria-label="percent">%</span>,`
     const generateErrorMessage = () => {
         const fieldsToCheck = [user, pwd, matchPwd];
         const errMessage = fieldsToCheck
@@ -153,7 +156,7 @@ const Register = () => {
                 </p>
                 <div>
                     <label htmlFor="pwd">
-                        Password:
+                        Password
                         <span className={pwd.isValid ? "valid" : "hide"}>
                             <FontAwesomeIcon icon={faCheck} />
                         </span>
@@ -187,17 +190,37 @@ const Register = () => {
                 >
                 </p>
                 <div>
-                    <label htmlFor="match-pwd">confirm password</label>
+                    <label htmlFor="match-pwd">
+                        Confirm Password
+                        <span className={matchPwd.isValid && matchPwd.value.length > 0 ? "valid" : "hide"}>
+                            <FontAwesomeIcon icon={faCheck} />
+                        </span>
+                        <span className={matchPwd.isValid || matchPwd.value.length === 0 ? "hide" : "invalid"}>
+                            <FontAwesomeIcon icon={faTimes} />
+                        </span>
+                    </label>
                     <input
-                        type="text"
+                        type="password"
                         id="match-pwd"
                         name="match-pwd"
-                        autoComplete="off"
                         value={matchPwd.value}
                         required
                         onChange={(e) => setMatchPwd((prev) => ({...prev, value: e.target.value}))}
+                        aria-invalid={matchPwd.isValid ? "false" : "true"}
+                        aria-describedby="matchpwdidnote"
+                        onFocus={() => setMatchPwd((prev) => ({...prev, isFocused: true}))}
+                        onBlur={() => setMatchPwd((prev) => ({...prev, isFocused: false}))}
                     />
                 </div>
+                <p
+                  id="matchpwdidnote"
+                  className={!matchPwd.isFocused || matchPwd.isValid && matchPwd.value.length > 0 ? "offscreen" : "instructions"}
+                >
+                    <FontAwesomeIcon icon={faInfoCircle} />
+                    {fieldsToErrorMessages['match-pwd']}
+                </p>
+
+                <button type="submit">Submit</button>
             </form>
             </section>
     );
