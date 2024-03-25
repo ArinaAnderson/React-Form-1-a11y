@@ -100,14 +100,17 @@ const Register = () => {
 
     const handleInputChange = () => {};
 
-    const handleFormSubmit = (evt) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        // generateErrorMessage
-        // if generatedErrString.length > 0 => setErrMessage(generatedErrString); AND errRef.current.focus()
-        // return
-
-        // try catch(e)
-
+        if (!user.isValid || !pwd.isValid || !matchPwd.isValid) {
+            setErrMessage('Invalid Entry');
+            return;
+        }
+        try {
+            console.log(user.value, pwd.value);
+        } catch (e) {
+            setErrMessage(e.message);
+        }
     };
 
     return  (
@@ -116,7 +119,7 @@ const Register = () => {
                 {errMessage}
             </p>
             <h1>Register</h1>
-            <form>
+            <form onSubmit={handleSubmit}>
                 <div>
                     <label htmlFor="username">
                         Username
@@ -220,8 +223,15 @@ const Register = () => {
                     {fieldsToErrorMessages['match-pwd']}
                 </p>
 
-                <button type="submit">Submit</button>
+                <button
+                  className={!user.isValid || !pwd.isValid || !matchPwd.isValid ? '' : 'btn'}
+                  disabled={!user.isValid || !pwd.isValid || !matchPwd.isValid}
+                  type="submit">
+                    Sign
+                </button>
             </form>
+            <p>Already registered?</p>
+            <p className="link-wrap"><a href="#">Sign In</a></p>
             </section>
     );
 };
